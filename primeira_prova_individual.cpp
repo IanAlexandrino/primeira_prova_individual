@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -52,7 +53,6 @@ class DataNascimento {
         }
 };
 
-
 class Paciente {
     string cpf;
     string nome;
@@ -65,6 +65,8 @@ class Paciente {
             nome = "";
             
         }
+
+        ~Paciente(){}
 
         void setCpf(string _cpf){
             this -> cpf = _cpf;
@@ -90,6 +92,43 @@ class Paciente {
             dtNasc.retornaDtNasc();
         }
 
+        void insereDadosPaciente(){
+            string nomeP;
+            string cpfP;
+
+            cout << "Digite o nome do paciente: ";
+            getline(cin >> ws, nomeP);
+            setNome(nomeP);
+
+            cout << "Digite o CPF do paciente: ";
+            getline(cin >> ws, cpfP);
+            setCpf(cpfP);
+
+            dtNasc.validaDtNasc();
+        }
+
+        void listaPaciente(){
+            cout << "Aqui está o paciente que você está procurando: \n" << endl;
+            cout << "Nome: " << getNome() << endl;
+            cout << "Nome: " << getCpf() << endl;
+            getDtNasc();
+        }
+
+        void alterandoPaciente (){
+            string auxNome;
+            string auxCpf;
+
+            cout << "Aqui está o paciente que você quer alterar: \n" << endl;
+            cout << "Novo nome: ";
+            getline(cin >> ws, auxNome);
+            setNome(auxNome);
+            cout << "Novo cpf: ";
+            getline(cin >> ws, auxCpf);
+            setCpf(auxCpf);
+            cout << "Nova data de nascimento: ";
+            setDtNasc();
+            
+        }
 };
 
 class Medico {
@@ -99,16 +138,7 @@ class Medico {
 
 };
 
-int main (){
-    Paciente *paciente_ = new Paciente();
-    vector <Paciente*> paciente;
-    paciente.push_back(paciente_);
-    // DataNascimento dataNasc;
-    // dataNasc.validaDtNasc(); 
-    paciente_->getDtNasc();
-    paciente_->getDtNasc();
-    int op;
-
+void Menu(){
     cout << "|=======================================|" << endl;
     cout << "|==========GESTÃO DE PACIENTES==========|" << endl;
     cout << "|========CLÍNICA SEM DODÓI LTDA.========|" << endl;
@@ -117,16 +147,102 @@ int main (){
     cout << "\nEscolha uma opção: \n" << endl;
 
     cout << "1. Incluir" << endl;
-    // *paciente_ = new Paciente();
-    // paciente.push_back(paciente_);
     cout << "2. Excluir" << endl;
     cout << "3. Alterar (apenas por CPF)" << endl;
     cout << "4. Listar" << endl;
     cout << "5. Localizar (por CPF)" << endl;
     cout << "0. Sair" << endl;
+}
 
-    cout << "\nOpção: ";
-    cin >> op;
+int main (){
+    Paciente *pacienteNovo = nullptr;
+    vector <Paciente*> pacienteVec;
+    vector <Paciente*> :: iterator it;
+    
+    string cpf;
+    int op;
+    do{
+        Menu();    
+
+        cout << "\nOpção: ";
+        cin >> op;
+        
+        switch(op){           
+            case 1:
+                pacienteNovo = new Paciente();
+                pacienteNovo->insereDadosPaciente();            
+                pacienteVec.push_back(pacienteNovo);
+                break;
+
+            case 2:
+                it = pacienteVec.begin();
+                
+
+                cout << "Digite o cpf do paciente que você quer deletar";
+                cin >> cpf;
+
+                pacienteNovo=*it;
+
+                while (it != pacienteVec.end() && pacienteNovo -> getCpf() != cpf){
+                    it++;
+                    pacienteNovo=*it;
+                }
+
+                if(it != pacienteVec.end()) pacienteVec.erase(it);
+
+            break;
+
+            case 3:
+                it = pacienteVec.begin();
+                
+
+                cout << "Digite o cpf do paciente que você quer alterar: ";
+                cin >> cpf;
+
+                pacienteNovo=*it;
+
+                while (it != pacienteVec.end() && pacienteNovo -> getCpf() != cpf){
+                    it++;
+                    pacienteNovo=*it;
+                }
+
+                if(it != pacienteVec.end()) pacienteNovo -> alterandoPaciente();
+            break;
+
+            case 4:
+                for (auto paciente : pacienteVec) {
+                    paciente->listaPaciente();
+                }
+            break;
+
+            case 5:
+                it = pacienteVec.begin();
+               
+
+                cout << "Digite o cpf do paciente que você quer localizar: ";
+                cin >> cpf;
+
+                pacienteNovo=*it;
+
+                while (it != pacienteVec.end() && pacienteNovo -> getCpf() != cpf){
+                    it++;
+                    pacienteNovo=*it;
+                }
+
+                if(it != pacienteVec.end()) pacienteNovo -> listaPaciente();
+            break;
+
+            case 0:            
+            break;
+
+            default:
+            cout << "Opção Inválida, por favor escolha uma opção válida!!!" << endl;
+        }
+    } while (op != 0);
+
+    for (auto paciente : pacienteVec) {
+        delete paciente;
+    }
 
     return 0;
 }
